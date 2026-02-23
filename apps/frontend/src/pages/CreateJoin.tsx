@@ -57,7 +57,7 @@ export default function CreateJoin() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen p-4 gap-6">
+    <div className="flex flex-col min-h-screen p-4 gap-6" style={{ paddingBottom: 32 }}>
       <div className="pt-4">
         <h1 className="font-heading" style={{ fontSize: 26, fontWeight: 800 }}>Squad</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--tg-theme-hint-color)' }}>
@@ -66,7 +66,17 @@ export default function CreateJoin() {
       </div>
 
       {mode === 'select' && (
-        <div className="flex flex-col gap-3 flex-1 justify-center fade-in">
+        <>
+          <div className="flex flex-col items-center justify-center flex-1 gap-4 fade-in">
+            <div style={{ fontSize: 72 }}>👥</div>
+            <div className="text-center">
+              <p className="font-heading font-bold" style={{ fontSize: 20 }}>Найди свою команду</p>
+              <p className="text-sm mt-1" style={{ color: 'var(--tg-theme-hint-color)', maxWidth: 260, margin: '6px auto 0' }}>
+                До 5 человек. Каждый день видите задачи друг друга.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3 fade-in">
           <button
             onClick={() => { setMode('create'); setError('') }}
             className="w-full py-4 font-semibold text-base"
@@ -86,10 +96,11 @@ export default function CreateJoin() {
             Войти по коду
           </button>
         </div>
+        </>
       )}
 
       {mode === 'create' && (
-        <div className="flex flex-col gap-3 flex-1 fade-in">
+        <div className="flex flex-col gap-3 fade-in">
           <input
             autoFocus
             value={squadName}
@@ -126,7 +137,7 @@ export default function CreateJoin() {
       )}
 
       {mode === 'join' && (
-        <div className="flex flex-col gap-3 flex-1 fade-in">
+        <div className="flex flex-col gap-3 fade-in">
           <input
             autoFocus
             value={inviteCode}

@@ -135,7 +135,7 @@ export default function Home() {
   const streak = user?.streak ?? 0
 
   return (
-    <div className="flex flex-col min-h-screen p-4 gap-4 fade-in">
+    <div className="flex flex-col p-4 gap-4 fade-in" style={{ paddingBottom: 32 }}>
       {/* Header — Streak */}
       <div className="flex items-center justify-between pt-2">
         <div>
@@ -162,11 +162,21 @@ export default function Home() {
       </div>
 
       {/* Tasks */}
-      <div className="flex flex-col gap-3 flex-1">
+      <div className="flex flex-col gap-3">
         {[0, 1, 2].map(i => {
           const task = tasks[i]
           return (
-            <div key={i} className="card p-4 flex items-center gap-3 min-h-[64px]">
+            <div
+              key={i}
+              className="p-4 flex items-center gap-3 min-h-[64px]"
+              style={{
+                background: task ? 'var(--tg-theme-secondary-bg-color)' : 'transparent',
+                borderRadius: 'var(--hs-radius)',
+                boxShadow: task ? 'var(--hs-shadow)' : 'none',
+                border: task ? 'none' : '1.5px dashed var(--tg-theme-hint-color)',
+                opacity: task ? 1 : 0.5,
+              }}
+            >
               {task ? (
                 <>
                   <button
@@ -198,9 +208,9 @@ export default function Home() {
                   className="flex items-center gap-2 w-full"
                   style={{ color: 'var(--tg-theme-hint-color)' }}
                 >
-                  <span style={{ fontSize: 20, fontWeight: 300 }}>+</span>
+                  <span style={{ fontSize: 18, fontWeight: 400 }}>＋</span>
                   <span className="text-sm font-medium">
-                    {squadId ? `Задача ${i + 1}` : 'Сначала создай Squad'}
+                    {squadId ? `Добавить задачу` : 'Сначала создай Squad'}
                   </span>
                 </button>
               )}

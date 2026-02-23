@@ -60,6 +60,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={isNewUser ? <Onboarding /> : <Navigate to="/home" replace />} />
+        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/home" element={<Home />} />
         <Route path="/squad/:id" element={<Squad />} />
         <Route path="/create-join" element={<CreateJoin />} />
