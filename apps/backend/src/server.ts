@@ -24,7 +24,7 @@ async function start() {
   app.register(tasksRoutes, { prefix: '/api/tasks' })
 
   // Health check
-  app.get('/health', () => ({ ok: true }))
+  app.get('/health', () => ({ ok: true, env: process.env.NODE_ENV, v: 2 }))
 
   // Telegram Bot — запускаем только с реальным токеном
   const isDev = process.env.NODE_ENV === 'development'
