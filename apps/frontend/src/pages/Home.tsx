@@ -13,6 +13,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [showInput, setShowInput] = useState(false)
   const [inputText, setInputText] = useState('')
+  const [addingTask, setAddingTask] = useState(false)
 
   useEffect(() => {
     init()
@@ -39,10 +40,11 @@ export default function Home() {
   }
 
   async function handleAddTask() {
-    if (!inputText.trim() || !squadId) return
+    if (!inputText.trim() || !squadId || addingTask) return
     if (tasks.length >= 3) return
 
     tg?.HapticFeedback.impactOccurred('light')
+    setAddingTask(true)
     try {
       const daily = await addTasks(squadId, [...tasks.map(t => t.text), inputText.trim()])
       setTasks(daily.tasks)
@@ -50,6 +52,8 @@ export default function Home() {
       setShowInput(false)
     } catch (e) {
       tg?.HapticFeedback.notificationOccurred('error')
+    } finally {
+      setAddingTask(false)
     }
   }
 
@@ -132,11 +136,11 @@ export default function Home() {
                 </>
               ) : (
                 <button
-                  onClick={() => setShowInput(true)}
+                  onClick={() => squadId ? setShowInput(true) : navigate('/create-join')}
                   className="flex items-center gap-2 text-[var(--tg-theme-hint-color)] w-full"
                 >
                   <span className="text-xl">+</span>
-                  <span className="text-sm">Задача {i + 1}</span>
+                  <span className="text-sm">{squadId ? `Задача ${i + 1}` : 'Сначала создай Squad'}</span>
                 </button>
               )}
             </div>
@@ -161,13 +165,14 @@ export default function Home() {
           />
           <button
             onClick={handleAddTask}
-            className="px-5 py-3 rounded-2xl font-semibold"
+            disabled={addingTask}
+            className="px-5 py-3 rounded-2xl font-semibold disabled:opacity-50"
             style={{
               backgroundColor: 'var(--tg-theme-button-color)',
               color: 'var(--tg-theme-button-text-color)',
             }}
           >
-            OK
+            {addingTask ? '...' : 'OK'}
           </button>
         </div>
       )}
