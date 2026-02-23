@@ -79,7 +79,7 @@ export default function Squad() {
   }
 
   function handleShare() {
-    if (navigator.share) {
+    if ('share' in navigator) {
       navigator.share({ text: `Вступи в мой Hard Squad! Код: ${inviteCode}` }).catch(() => copyCode())
     } else {
       copyCode()
@@ -206,7 +206,7 @@ export default function Squad() {
               className="px-4 py-2 rounded-xl text-sm font-semibold"
               style={{ backgroundColor: 'var(--tg-theme-button-color)', color: 'var(--tg-theme-button-text-color)' }}
             >
-              {copied ? '✓ Скопировано' : navigator.share ? 'Поделиться' : 'Копировать'}
+              {copied ? '✓ Скопировано' : 'share' in navigator ? 'Поделиться' : 'Копировать'}
             </button>
           </div>
         )}
