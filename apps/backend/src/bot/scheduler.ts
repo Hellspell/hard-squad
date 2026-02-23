@@ -117,7 +117,7 @@ async function sendDailyReport(bot: Telegraf) {
       const lines: string[] = [`📊 Итог дня — ${squad.name}:\n`]
 
       for (const m of members) {
-        const user = m.users as { name: string }
+        const user = m.users as unknown as { name: string }
         const { data: daily } = await db
           .from('daily_tasks')
           .select('id')

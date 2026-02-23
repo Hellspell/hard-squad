@@ -115,7 +115,7 @@ export async function squadsRoutes(app: FastifyInstance) {
         .eq('date', today)
 
       const result = members?.map(m => {
-        const user = m.users as { id: number; name: string; streak: number }
+        const user = m.users as unknown as { id: number; name: string; streak: number }
         const daily = dailyTasks?.find(d => d.user_id === m.user_id)
         const tasks = (daily?.tasks ?? []).sort((a: { position: number }, b: { position: number }) => a.position - b.position)
 

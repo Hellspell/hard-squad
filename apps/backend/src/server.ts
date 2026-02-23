@@ -26,23 +26,28 @@ async function start() {
   // Health check
   app.get('/health', () => ({ ok: true }))
 
-  // Telegram Bot
-  setupCommands(bot)
-  setupScheduler(bot)
+  // Telegram Bot — запускаем только с реальным токеном
+  const isDev = process.env.NODE_ENV === 'development'
+  const hasRealToken = process.env.BOT_TOKEN && process.env.BOT_TOKEN !== 'dev_placeholder'
 
-  if (process.env.WEBHOOK_URL) {
-    // Production — webhook
-    const webhookUrl = `${process.env.WEBHOOK_URL}/webhook`
-    await bot.telegram.setWebhook(webhookUrl)
-    app.post('/webhook', (req, reply) => {
-      bot.handleUpdate(req.body as Parameters<typeof bot.handleUpdate>[0])
-      reply.status(200).send()
-    })
-    console.log(`Bot webhook: ${webhookUrl}`)
-  } else {
-    // Development — long polling
-    bot.launch()
-    console.log('Bot started (long polling)')
+  if (hasRealToken) {
+    setupCommands(bot)
+    setupScheduler(bot)
+
+    if (process.env.WEBHOOK_URL) {
+      const webhookUrl = `${process.env.WEBHOOK_URL}/webhook`
+      await bot.telegram.setWebhook(webhookUrl)
+      app.post('/webhook', (req, reply) => {
+        bot.handleUpdate(req.body as Parameters<typeof bot.handleUpdate>[0])
+        reply.status(200).send()
+      })
+      console.log(`Bot webhook: ${webhookUrl}`)
+    } else {
+      bot.launch()
+      console.log('Bot started (long polling)')
+    }
+  } else if (isDev) {
+    console.log('⚠️  Bot отключён — добавь реальный BOT_TOKEN в .env')
   }
 
   const port = Number(process.env.PORT ?? 3000)
