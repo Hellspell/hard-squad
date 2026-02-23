@@ -234,30 +234,45 @@ export default function Home() {
         })}
       </div>}
 
+      {/* All tasks done banner */}
+      {tasks.length === 3 && tasks.every(t => t.is_done) && (
+        <div className="card p-4 text-center fade-in">
+          <p style={{ fontSize: 28 }}>🎉</p>
+          <p className="font-semibold mt-1" style={{ fontSize: 15 }}>Все задачи выполнены!</p>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--tg-theme-hint-color)' }}>Streak продолжается 🔥</p>
+        </div>
+      )}
+
       {/* Add task input */}
       {showInput && tasks.length < 3 && (
-        <div className="flex gap-2 fade-in">
-          <input
-            autoFocus
-            value={inputText}
-            onChange={e => setInputText(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleAddTask()}
-            placeholder="Введи задачу..."
-            className="input-card flex-1 px-4 py-3"
-          />
-          <button
-            onClick={handleAddTask}
-            disabled={addingTask}
-            className="flex items-center gap-2 px-5 font-semibold"
-            style={{
-              backgroundColor: 'var(--tg-theme-button-color)',
-              color: 'var(--tg-theme-button-text-color)',
-              borderRadius: 12,
-              opacity: addingTask ? 0.5 : 1,
-            }}
-          >
-            {addingTask ? <span className="spinner" /> : 'OK'}
-          </button>
+        <div className="flex flex-col gap-1.5 fade-in">
+          <div className="flex gap-2">
+            <input
+              autoFocus
+              value={inputText}
+              onChange={e => setInputText(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleAddTask()}
+              placeholder="Введи задачу..."
+              className="input-card flex-1 px-4 py-3"
+              maxLength={120}
+            />
+            <button
+              onClick={handleAddTask}
+              disabled={addingTask || !inputText.trim()}
+              className="flex items-center gap-2 px-5 font-semibold"
+              style={{
+                backgroundColor: 'var(--tg-theme-button-color)',
+                color: 'var(--tg-theme-button-text-color)',
+                borderRadius: 12,
+                opacity: addingTask || !inputText.trim() ? 0.5 : 1,
+              }}
+            >
+              {addingTask ? <span className="spinner" /> : 'OK'}
+            </button>
+          </div>
+          <p className="text-xs px-1" style={{ color: 'var(--tg-theme-hint-color)' }}>
+            {tasks.length} / 3 задачи добавлено
+          </p>
         </div>
       )}
 
@@ -274,7 +289,9 @@ export default function Home() {
                 <span style={{
                   color: m.done_count === m.total_count && m.total_count > 0
                     ? 'var(--hs-success)'
-                    : 'var(--hs-danger)'
+                    : m.total_count > 0
+                      ? 'var(--hs-danger)'
+                      : 'var(--tg-theme-hint-color)'
                 }}>
                   {m.done_count === m.total_count && m.total_count > 0 ? '✓' : m.total_count > 0 ? '✗' : '—'}
                 </span>

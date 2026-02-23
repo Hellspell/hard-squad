@@ -45,8 +45,8 @@ export default function CreateJoin() {
   }
 
   async function handleJoin() {
-    if (inviteCode.trim().length < 6) {
-      setError('Код должен быть не менее 6 символов')
+    if (inviteCode.trim().length !== 6) {
+      setError('Код — 6 символов')
       return
     }
     setLoading(true)
@@ -154,7 +154,7 @@ export default function CreateJoin() {
             onChange={e => { setInviteCode(e.target.value.toUpperCase()); setError('') }}
             onKeyDown={e => e.key === 'Enter' && handleJoin()}
             placeholder="Код приглашения"
-            maxLength={8}
+            maxLength={6}
             className="input-card px-4 py-4 text-center tracking-widest font-mono"
           />
           {error && (

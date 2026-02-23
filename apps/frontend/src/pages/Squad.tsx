@@ -245,13 +245,8 @@ export default function Squad() {
         {/* Leave squad */}
         <button
           onClick={handleLeave}
-          className="w-full py-3 font-semibold text-sm"
-          style={{
-            backgroundColor: 'var(--tg-theme-secondary-bg-color)',
-            color: 'var(--hs-danger)',
-            borderRadius: 'var(--hs-radius)',
-            boxShadow: 'var(--hs-shadow)',
-          }}
+          className="w-full py-2 text-sm"
+          style={{ color: 'var(--tg-theme-hint-color)' }}
         >
           Выйти из Squad
         </button>
