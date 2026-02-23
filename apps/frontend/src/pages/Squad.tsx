@@ -62,7 +62,6 @@ export default function Squad() {
 
     fetchData().finally(() => setLoading(false))
 
-    // Auto-refresh every 30s
     intervalRef.current = setInterval(fetchData, 30_000)
 
     return () => {
@@ -105,11 +104,15 @@ export default function Squad() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4 gap-4 text-center">
         <span className="text-5xl">😕</span>
-        <p className="text-[var(--tg-theme-hint-color)]">{error}</p>
+        <p style={{ color: 'var(--tg-theme-hint-color)' }}>{error}</p>
         <button
           onClick={() => { setLoading(true); fetchData().finally(() => setLoading(false)) }}
-          className="px-6 py-3 rounded-2xl font-semibold"
-          style={{ backgroundColor: 'var(--tg-theme-button-color)', color: 'var(--tg-theme-button-text-color)' }}
+          className="px-6 py-3 font-semibold"
+          style={{
+            backgroundColor: 'var(--tg-theme-button-color)',
+            color: 'var(--tg-theme-button-text-color)',
+            borderRadius: 12,
+          }}
         >
           Попробовать снова
         </button>
@@ -123,88 +126,105 @@ export default function Squad() {
   return (
     <div className="flex flex-col min-h-screen p-4 gap-4 fade-in">
       <div className="pt-2">
-        <h1 className="text-xl font-bold">Сегодня</h1>
-        <p className="text-sm text-[var(--tg-theme-hint-color)]">
+        <h1 className="font-heading" style={{ fontSize: 22, fontWeight: 800 }}>Сегодня</h1>
+        <p className="text-sm mt-0.5" style={{ color: 'var(--tg-theme-hint-color)' }}>
           {new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>
 
       {/* Alone state */}
       {isAlone && inviteCode && (
-        <div
-          className="rounded-2xl p-4 text-center"
-          style={{ backgroundColor: 'var(--tg-theme-secondary-bg-color)' }}
-        >
-          <p className="text-base font-semibold mb-1">Пригласи участников!</p>
-          <p className="text-sm text-[var(--tg-theme-hint-color)]">
+        <div className="card p-4 text-center">
+          <p className="font-semibold" style={{ fontSize: 15 }}>Пригласи участников!</p>
+          <p className="text-sm mt-1" style={{ color: 'var(--tg-theme-hint-color)' }}>
             Поделись кодом ниже 👇
           </p>
         </div>
       )}
 
       {/* Members */}
-      {sorted.map(member => (
-        <div
-          key={member.user_id}
-          className="rounded-2xl p-4 flex flex-col gap-3"
-          style={{ backgroundColor: 'var(--tg-theme-secondary-bg-color)' }}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                style={{ backgroundColor: 'var(--tg-theme-button-color)', color: 'var(--tg-theme-button-text-color)' }}
-              >
-                {member.name[0]}
-              </div>
-              <span className="font-semibold">{member.name}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-[var(--tg-theme-hint-color)]">🔥 {member.streak}</span>
-              {member.total_count > 0 && (
-                <span className={`text-sm font-bold ${
-                  member.done_count === member.total_count ? 'text-green-500' : 'text-[var(--tg-theme-hint-color)]'
-                }`}>
-                  {member.done_count}/{member.total_count}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {member.tasks.length === 0 ? (
-            <p className="text-sm text-[var(--tg-theme-hint-color)]">— Ещё не добавил задачи</p>
-          ) : (
-            <div className="flex flex-col gap-1.5">
-              {member.tasks.map(task => (
-                <div key={task.id} className="flex items-center gap-2 text-sm">
-                  <span className={task.is_done ? 'text-green-500' : 'text-[var(--tg-theme-hint-color)]'}>
-                    {task.is_done ? '✓' : '○'}
-                  </span>
-                  <span className={task.is_done ? 'line-through text-[var(--tg-theme-hint-color)]' : ''}>
-                    {task.text}
-                  </span>
+      {sorted.map(member => {
+        const isDone = member.total_count > 0 && member.done_count === member.total_count
+        return (
+          <div key={member.user_id} className="card p-4 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div
+                  className="flex items-center justify-center flex-shrink-0 font-heading"
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: '50%',
+                    backgroundColor: 'var(--tg-theme-button-color)',
+                    color: 'var(--tg-theme-button-text-color)',
+                    fontSize: 14,
+                    fontWeight: 700,
+                  }}
+                >
+                  {member.name[0]}
                 </div>
-              ))}
+                <span className="font-semibold" style={{ fontSize: 15 }}>{member.name}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm" style={{ color: 'var(--tg-theme-hint-color)' }}>
+                  🔥 {member.streak}
+                </span>
+                {member.total_count > 0 && (
+                  <span
+                    className="text-sm font-bold"
+                    style={{ color: isDone ? 'var(--hs-success)' : 'var(--tg-theme-hint-color)' }}
+                  >
+                    {member.done_count}/{member.total_count}
+                  </span>
+                )}
+              </div>
             </div>
-          )}
-        </div>
-      ))}
+
+            {member.tasks.length === 0 ? (
+              <p className="text-sm" style={{ color: 'var(--tg-theme-hint-color)' }}>
+                — Ещё не добавил задачи
+              </p>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                {member.tasks.map(task => (
+                  <div key={task.id} className="flex items-center gap-2 text-sm">
+                    <span style={{ color: task.is_done ? 'var(--hs-success)' : 'var(--tg-theme-hint-color)' }}>
+                      {task.is_done ? '✓' : '○'}
+                    </span>
+                    <span style={{
+                      textDecoration: task.is_done ? 'line-through' : 'none',
+                      color: task.is_done ? 'var(--tg-theme-hint-color)' : 'var(--tg-theme-text-color)',
+                    }}>
+                      {task.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      })}
 
       <div className="mt-auto flex flex-col gap-3">
         {/* Invite code */}
         {inviteCode && (
-          <div
-            className="rounded-2xl p-4 flex items-center justify-between"
-            style={{ backgroundColor: 'var(--tg-theme-secondary-bg-color)' }}
-          >
+          <div className="card p-4 flex items-center justify-between">
             <div>
-              <p className="text-xs text-[var(--tg-theme-hint-color)] mb-1">Код приглашения</p>
-              <p className="text-2xl font-mono font-bold tracking-widest">{inviteCode}</p>
+              <p className="text-xs mb-1" style={{ color: 'var(--tg-theme-hint-color)' }}>
+                Код приглашения
+              </p>
+              <p className="font-mono font-bold tracking-widest" style={{ fontSize: 22 }}>
+                {inviteCode}
+              </p>
             </div>
             <button
               onClick={handleShare}
-              className="px-4 py-2 rounded-xl text-sm font-semibold"
-              style={{ backgroundColor: 'var(--tg-theme-button-color)', color: 'var(--tg-theme-button-text-color)' }}
+              className="px-4 py-2 font-semibold text-sm"
+              style={{
+                backgroundColor: 'var(--tg-theme-button-color)',
+                color: 'var(--tg-theme-button-text-color)',
+                borderRadius: 10,
+              }}
             >
               {copied ? '✓ Скопировано' : 'share' in navigator ? 'Поделиться' : 'Копировать'}
             </button>
@@ -213,7 +233,7 @@ export default function Squad() {
 
         {/* Last updated */}
         {secondsAgo !== null && (
-          <p className="text-center text-xs text-[var(--tg-theme-hint-color)]">
+          <p className="text-center text-xs" style={{ color: 'var(--tg-theme-hint-color)' }}>
             обновлено {secondsAgo < 5 ? 'только что' : `${secondsAgo} сек назад`}
           </p>
         )}
@@ -221,8 +241,13 @@ export default function Squad() {
         {/* Leave squad */}
         <button
           onClick={handleLeave}
-          className="w-full py-3 rounded-2xl text-sm font-semibold text-red-400"
-          style={{ backgroundColor: 'var(--tg-theme-secondary-bg-color)' }}
+          className="w-full py-3 font-semibold text-sm"
+          style={{
+            backgroundColor: 'var(--tg-theme-secondary-bg-color)',
+            color: 'var(--hs-danger)',
+            borderRadius: 'var(--hs-radius)',
+            boxShadow: 'var(--hs-shadow)',
+          }}
         >
           Выйти из Squad
         </button>

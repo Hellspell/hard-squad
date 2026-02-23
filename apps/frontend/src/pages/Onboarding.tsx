@@ -70,16 +70,24 @@ export default function Onboarding() {
           {SLIDES.map((_, i) => (
             <div
               key={i}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === slide ? 'w-6 bg-[var(--tg-theme-button-color)]' : 'w-1.5 bg-[var(--tg-theme-hint-color)]'
-              }`}
+              className="transition-all duration-300"
+              style={{
+                height: 6,
+                borderRadius: 99,
+                width: i === slide ? 24 : 6,
+                backgroundColor: i === slide
+                  ? 'var(--tg-theme-button-color)'
+                  : 'var(--tg-theme-hint-color)',
+                opacity: i === slide ? 1 : 0.4,
+              }}
             />
           ))}
         </div>
         {!isLast && (
           <button
             onClick={() => navigate('/home')}
-            className="text-sm text-[var(--tg-theme-hint-color)] py-1 px-2"
+            className="text-sm py-1 px-2"
+            style={{ color: 'var(--tg-theme-hint-color)' }}
           >
             Пропустить
           </button>
@@ -91,9 +99,21 @@ export default function Onboarding() {
         key={`${slide}-${direction}`}
         className="flex flex-col items-center text-center gap-6 fade-in"
       >
-        <span className="text-7xl">{current.emoji}</span>
-        <h1 className="text-2xl font-bold">{current.title}</h1>
-        <p className="text-[var(--tg-theme-hint-color)] text-base leading-relaxed max-w-xs">
+        <span style={{ fontSize: 72 }}>{current.emoji}</span>
+        <h1
+          className="font-heading"
+          style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em' }}
+        >
+          {current.title}
+        </h1>
+        <p
+          className="text-base leading-relaxed"
+          style={{
+            color: 'var(--tg-theme-hint-color)',
+            maxWidth: 280,
+            lineHeight: 1.6,
+          }}
+        >
           {current.desc}
         </p>
       </div>
@@ -101,10 +121,12 @@ export default function Onboarding() {
       {/* Button */}
       <button
         onClick={goNext}
-        className="w-full py-4 rounded-2xl font-semibold text-base transition-opacity active:opacity-70"
+        className="w-full py-4 font-semibold text-base transition-opacity active:opacity-70"
         style={{
           backgroundColor: 'var(--tg-theme-button-color)',
           color: 'var(--tg-theme-button-text-color)',
+          borderRadius: 'var(--hs-radius)',
+          fontFamily: "'Inter', sans-serif",
         }}
       >
         {isLast ? 'Я готов' : 'Далее'}
