@@ -14,7 +14,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN!)
 async function start() {
   // CORS — разрешаем только наш frontend
   await app.register(cors, {
-    origin: process.env.FRONTEND_URL ?? '*',
+    origin: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   })
 
