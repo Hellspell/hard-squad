@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getSquadToday } from '../api'
+import { getSquadToday, leaveSquad } from '../api'
 import type { SquadToday } from '../api'
 import { tg } from '../App'
 
@@ -9,6 +9,9 @@ export default function Squad() {
   const navigate = useNavigate()
   const [data, setData] = useState<SquadToday | null>(null)
   const [loading, setLoading] = useState(true)
+  const [copied, setCopied] = useState(false)
+
+  const inviteCode = localStorage.getItem('hs_invite_code') ?? ''
 
   useEffect(() => {
     tg?.BackButton.show()
@@ -23,6 +26,24 @@ export default function Squad() {
 
     return () => tg?.BackButton.hide()
   }, [id, navigate])
+
+  function copyCode() {
+    navigator.clipboard.writeText(inviteCode).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  function handleLeave() {
+    if (!id) return
+    tg?.showConfirm('Выйти из Squad? Твои задачи сохранятся.', async (ok) => {
+      if (!ok) return
+      await leaveSquad(id)
+      localStorage.removeItem('hs_squad_id')
+      localStorage.removeItem('hs_invite_code')
+      navigate('/home')
+    })
+  }
 
   if (loading) {
     return (
@@ -47,7 +68,6 @@ export default function Squad() {
           className="rounded-2xl p-4 flex flex-col gap-3"
           style={{ backgroundColor: 'var(--tg-theme-secondary-bg-color)' }}
         >
-          {/* Member header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div
@@ -70,7 +90,6 @@ export default function Squad() {
             </div>
           </div>
 
-          {/* Tasks */}
           {member.tasks.length === 0 ? (
             <p className="text-sm text-[var(--tg-theme-hint-color)]">Ещё не добавил задачи</p>
           ) : (
@@ -90,19 +109,36 @@ export default function Squad() {
         </div>
       ))}
 
-      {/* Invite button */}
-      <button
-        onClick={() => {
-          const code = localStorage.getItem('hs_invite_code')
-          if (code && navigator.share) {
-            navigator.share({ title: 'Hard Squad', text: `Присоединяйся к моему squad!`, url: `https://t.me/hardsquad_bot?start=${code}` })
-          }
-        }}
-        className="w-full py-4 rounded-2xl font-semibold text-base mt-auto"
-        style={{ backgroundColor: 'var(--tg-theme-secondary-bg-color)' }}
-      >
-        Пригласить ещё
-      </button>
+      <div className="mt-auto flex flex-col gap-3">
+        {/* Invite code */}
+        {inviteCode && (
+          <div
+            className="rounded-2xl p-4 flex items-center justify-between"
+            style={{ backgroundColor: 'var(--tg-theme-secondary-bg-color)' }}
+          >
+            <div>
+              <p className="text-xs text-[var(--tg-theme-hint-color)] mb-1">Код приглашения</p>
+              <p className="text-2xl font-mono font-bold tracking-widest">{inviteCode}</p>
+            </div>
+            <button
+              onClick={copyCode}
+              className="px-4 py-2 rounded-xl text-sm font-semibold"
+              style={{ backgroundColor: 'var(--tg-theme-button-color)', color: 'var(--tg-theme-button-text-color)' }}
+            >
+              {copied ? '✓ Скопировано' : 'Копировать'}
+            </button>
+          </div>
+        )}
+
+        {/* Leave squad */}
+        <button
+          onClick={handleLeave}
+          className="w-full py-3 rounded-2xl text-sm font-semibold text-red-400"
+          style={{ backgroundColor: 'var(--tg-theme-secondary-bg-color)' }}
+        >
+          Выйти из Squad
+        </button>
+      </div>
     </div>
   )
 }

@@ -91,6 +91,20 @@ export async function squadsRoutes(app: FastifyInstance) {
     }
   )
 
+  // DELETE /api/squads/:id/leave — покинуть squad
+  app.delete<{ Params: { id: string } }>(
+    '/:id/leave',
+    { preHandler: authMiddleware },
+    async (req, reply) => {
+      const { id: squadId } = req.params
+      const { id: userId } = req.telegramUser
+
+      await db.from('squad_members').delete().eq('squad_id', squadId).eq('user_id', userId)
+
+      return { message: 'Вышел из squad' }
+    }
+  )
+
   // GET /api/squads/:id/today — статус всех участников на сегодня
   app.get<{ Params: { id: string } }>(
     '/:id/today',

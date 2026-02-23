@@ -39,6 +39,9 @@ export const createSquad = (name: string) =>
 export const joinSquad = (squadId: string) =>
   request<Squad>(`/squads/${squadId}/join`, { method: 'POST' })
 
+export const leaveSquad = (squadId: string) =>
+  request<{ message: string }>(`/squads/${squadId}/leave`, { method: 'DELETE' })
+
 export const getSquadToday = (squadId: string) =>
   request<SquadToday>(`/squads/${squadId}/today`)
 
