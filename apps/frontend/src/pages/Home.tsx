@@ -57,15 +57,18 @@ export default function Home() {
     }
   }
 
-  async function handleComplete(taskId: string) {
-    tg?.HapticFeedback.impactOccurred('medium')
-    try {
-      const updated = await completeTask(taskId)
-      setTasks(prev => prev.map(t => (t.id === taskId ? updated : t)))
-      tg?.HapticFeedback.notificationOccurred('success')
-    } catch (e) {
-      tg?.HapticFeedback.notificationOccurred('error')
-    }
+  function handleComplete(taskId: string) {
+    tg?.showConfirm('Задача выполнена? Отменить будет нельзя.', async (ok) => {
+      if (!ok) return
+      tg?.HapticFeedback.impactOccurred('medium')
+      try {
+        const updated = await completeTask(taskId)
+        setTasks(prev => prev.map(t => (t.id === taskId ? updated : t)))
+        tg?.HapticFeedback.notificationOccurred('success')
+      } catch (e) {
+        tg?.HapticFeedback.notificationOccurred('error')
+      }
+    })
   }
 
   const hoursLeft = () => {

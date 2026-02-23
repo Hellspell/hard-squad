@@ -20,6 +20,7 @@ declare global {
           notificationOccurred: (type: 'error' | 'success' | 'warning') => void
         }
         BackButton: { show: () => void; hide: () => void; onClick: (cb: () => void) => void }
+        showConfirm: (message: string, callback: (ok: boolean) => void) => void
       }
     }
   }
