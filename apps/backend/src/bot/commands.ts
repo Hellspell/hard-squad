@@ -1,7 +1,7 @@
 import { Telegraf } from 'telegraf'
 
 export function setupCommands(bot: Telegraf) {
-  const MINI_APP_URL = process.env.FRONTEND_URL!
+  const MINI_APP_URL = process.env.FRONTEND_URL || 'https://show-helping-chip-suggest.trycloudflare.com'
 
   bot.start(async ctx => {
     await ctx.reply(
