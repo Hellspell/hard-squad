@@ -27,8 +27,8 @@ async function start() {
   app.get('/health', () => ({ ok: true, env: process.env.NODE_ENV, v: 2 }))
 
   // Webhook маршрут — всегда регистрируем
-  app.post('/webhook', (req, reply) => {
-    bot.handleUpdate(req.body as Parameters<typeof bot.handleUpdate>[0])
+  app.post('/webhook', async (req, reply) => {
+    await bot.handleUpdate(req.body as Parameters<typeof bot.handleUpdate>[0])
     reply.status(200).send()
   })
 
