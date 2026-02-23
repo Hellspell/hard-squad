@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createSquad, getSquadByCode, joinSquad } from '../api'
 import { tg } from '../App'
@@ -8,6 +8,16 @@ type Mode = 'select' | 'create' | 'join'
 export default function CreateJoin() {
   const navigate = useNavigate()
   const [mode, setMode] = useState<Mode>('select')
+
+  useEffect(() => {
+    if (mode !== 'select') {
+      tg?.BackButton.show()
+      tg?.BackButton.onClick(() => setMode('select'))
+    } else {
+      tg?.BackButton.hide()
+    }
+    return () => { tg?.BackButton.hide() }
+  }, [mode])
   const [squadName, setSquadName] = useState('')
   const [inviteCode, setInviteCode] = useState('')
   const [loading, setLoading] = useState(false)

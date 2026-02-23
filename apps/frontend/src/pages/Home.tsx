@@ -177,7 +177,7 @@ export default function Home() {
       </div>
 
       {/* Tasks */}
-      <div className="flex flex-col gap-3">
+      {squadId && <div className="flex flex-col gap-3">
         {[0, 1, 2].map(i => {
           const task = tasks[i]
           return (
@@ -232,7 +232,7 @@ export default function Home() {
             </div>
           )
         })}
-      </div>
+      </div>}
 
       {/* Add task input */}
       {showInput && tasks.length < 3 && (

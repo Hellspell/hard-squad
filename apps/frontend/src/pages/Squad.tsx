@@ -96,7 +96,13 @@ export default function Squad() {
     })
   }
 
+  const [tick, setTick] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setTick(n => n + 1), 5000)
+    return () => clearInterval(t)
+  }, [])
   const secondsAgo = lastUpdated ? Math.floor((Date.now() - lastUpdated) / 1000) : null
+  void tick // trigger re-render for live counter
 
   if (loading) return <SkeletonSquad />
 
@@ -132,15 +138,6 @@ export default function Squad() {
         </p>
       </div>
 
-      {/* Alone state */}
-      {isAlone && inviteCode && (
-        <div className="card p-4 text-center">
-          <p className="font-semibold" style={{ fontSize: 15 }}>Пригласи участников!</p>
-          <p className="text-sm mt-1" style={{ color: 'var(--tg-theme-hint-color)' }}>
-            Поделись кодом ниже 👇
-          </p>
-        </div>
-      )}
 
       {/* Members */}
       {sorted.map(member => {
@@ -208,26 +205,33 @@ export default function Squad() {
       <div className="mt-auto flex flex-col gap-3">
         {/* Invite code */}
         {inviteCode && (
-          <div className="card p-4 flex items-center justify-between">
-            <div>
-              <p className="text-xs mb-1" style={{ color: 'var(--tg-theme-hint-color)' }}>
-                Код приглашения
+          <div className="card p-4">
+            {isAlone && (
+              <p className="font-semibold mb-3" style={{ fontSize: 15 }}>
+                👋 Пригласи первого участника!
               </p>
-              <p className="font-mono font-bold tracking-widest" style={{ fontSize: 22 }}>
-                {inviteCode}
-              </p>
+            )}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs mb-1" style={{ color: 'var(--tg-theme-hint-color)' }}>
+                  Код приглашения
+                </p>
+                <p className="font-mono font-bold tracking-widest" style={{ fontSize: 22 }}>
+                  {inviteCode}
+                </p>
+              </div>
+              <button
+                onClick={handleShare}
+                className="px-4 py-2 font-semibold text-sm"
+                style={{
+                  backgroundColor: 'var(--tg-theme-button-color)',
+                  color: 'var(--tg-theme-button-text-color)',
+                  borderRadius: 10,
+                }}
+              >
+                {copied ? '✓ Скопировано' : 'share' in navigator ? 'Поделиться' : 'Копировать'}
+              </button>
             </div>
-            <button
-              onClick={handleShare}
-              className="px-4 py-2 font-semibold text-sm"
-              style={{
-                backgroundColor: 'var(--tg-theme-button-color)',
-                color: 'var(--tg-theme-button-text-color)',
-                borderRadius: 10,
-              }}
-            >
-              {copied ? '✓ Скопировано' : 'share' in navigator ? 'Поделиться' : 'Копировать'}
-            </button>
           </div>
         )}
 
