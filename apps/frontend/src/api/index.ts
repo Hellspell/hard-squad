@@ -5,21 +5,37 @@ function getInitData(): string {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      'X-Telegram-Init-Data': getInitData(),
-      ...options.headers,
-    },
-  })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 10_000)
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ message: 'Unknown error' }))
-    throw new Error(err.message ?? `HTTP ${res.status}`)
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        'X-Telegram-Init-Data': getInitData(),
+        ...options.headers,
+      },
+    })
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: 'Unknown error' }))
+      throw new Error(err.message ?? `HTTP ${res.status}`)
+    }
+
+    return res.json()
+  } catch (e) {
+    if (e instanceof Error && e.name === 'AbortError') {
+      throw new Error('Превышено время ожидания')
+    }
+    if (e instanceof TypeError) {
+      throw new Error('Нет соединения')
+    }
+    throw e
+  } finally {
+    clearTimeout(timeout)
   }
-
-  return res.json()
 }
 
 // --- Auth ---

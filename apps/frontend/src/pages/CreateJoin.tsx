@@ -14,7 +14,10 @@ export default function CreateJoin() {
   const [error, setError] = useState('')
 
   async function handleCreate() {
-    if (!squadName.trim()) return
+    if (squadName.trim().length < 2) {
+      setError('Название должно быть не менее 2 символов')
+      return
+    }
     setLoading(true)
     setError('')
     try {
@@ -32,7 +35,10 @@ export default function CreateJoin() {
   }
 
   async function handleJoin() {
-    if (!inviteCode.trim()) return
+    if (inviteCode.trim().length < 6) {
+      setError('Код должен быть не менее 6 символов')
+      return
+    }
     setLoading(true)
     setError('')
     try {
@@ -42,7 +48,7 @@ export default function CreateJoin() {
       localStorage.setItem('hs_invite_code', squad.invite_code)
       tg?.HapticFeedback.notificationOccurred('success')
       navigate('/home')
-    } catch (e: unknown) {
+    } catch {
       setError('Неверный код или squad не найден')
       tg?.HapticFeedback.notificationOccurred('error')
     } finally {
@@ -60,16 +66,16 @@ export default function CreateJoin() {
       </div>
 
       {mode === 'select' && (
-        <div className="flex flex-col gap-3 flex-1 justify-center">
+        <div className="flex flex-col gap-3 flex-1 justify-center fade-in">
           <button
-            onClick={() => setMode('create')}
+            onClick={() => { setMode('create'); setError('') }}
             className="w-full py-4 rounded-2xl font-semibold text-base"
             style={{ backgroundColor: 'var(--tg-theme-button-color)', color: 'var(--tg-theme-button-text-color)' }}
           >
             Создать Squad
           </button>
           <button
-            onClick={() => setMode('join')}
+            onClick={() => { setMode('join'); setError('') }}
             className="w-full py-4 rounded-2xl font-semibold text-base"
             style={{ backgroundColor: 'var(--tg-theme-secondary-bg-color)' }}
           >
@@ -79,38 +85,41 @@ export default function CreateJoin() {
       )}
 
       {mode === 'create' && (
-        <div className="flex flex-col gap-4 flex-1">
+        <div className="flex flex-col gap-3 flex-1 fade-in">
           <input
             autoFocus
             value={squadName}
-            onChange={e => setSquadName(e.target.value)}
+            onChange={e => { setSquadName(e.target.value); setError('') }}
             onKeyDown={e => e.key === 'Enter' && handleCreate()}
             placeholder="Название squad..."
             maxLength={30}
             className="w-full px-4 py-4 rounded-2xl outline-none text-base"
             style={{ backgroundColor: 'var(--tg-theme-secondary-bg-color)', color: 'var(--tg-theme-text-color)' }}
           />
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-red-400 text-sm px-1">{error}</p>}
           <button
             onClick={handleCreate}
             disabled={loading || !squadName.trim()}
-            className="w-full py-4 rounded-2xl font-semibold text-base disabled:opacity-50"
+            className="w-full py-4 rounded-2xl font-semibold text-base disabled:opacity-50 flex items-center justify-center gap-2"
             style={{ backgroundColor: 'var(--tg-theme-button-color)', color: 'var(--tg-theme-button-text-color)' }}
           >
-            {loading ? 'Создаём...' : 'Создать'}
+            {loading ? <><span className="spinner" /> Создаём...</> : 'Создать'}
           </button>
-          <button onClick={() => setMode('select')} className="text-[var(--tg-theme-hint-color)] text-sm">
+          <button
+            onClick={() => { setMode('select'); setError('') }}
+            className="text-[var(--tg-theme-hint-color)] text-sm py-2"
+          >
             Назад
           </button>
         </div>
       )}
 
       {mode === 'join' && (
-        <div className="flex flex-col gap-4 flex-1">
+        <div className="flex flex-col gap-3 flex-1 fade-in">
           <input
             autoFocus
             value={inviteCode}
-            onChange={e => setInviteCode(e.target.value.toUpperCase())}
+            onChange={e => { setInviteCode(e.target.value.toUpperCase()); setError('') }}
             onKeyDown={e => e.key === 'Enter' && handleJoin()}
             placeholder="Код приглашения"
             maxLength={8}
@@ -121,12 +130,15 @@ export default function CreateJoin() {
           <button
             onClick={handleJoin}
             disabled={loading || !inviteCode.trim()}
-            className="w-full py-4 rounded-2xl font-semibold text-base disabled:opacity-50"
+            className="w-full py-4 rounded-2xl font-semibold text-base disabled:opacity-50 flex items-center justify-center gap-2"
             style={{ backgroundColor: 'var(--tg-theme-button-color)', color: 'var(--tg-theme-button-text-color)' }}
           >
-            {loading ? 'Входим...' : 'Войти'}
+            {loading ? <><span className="spinner" /> Входим...</> : 'Войти'}
           </button>
-          <button onClick={() => setMode('select')} className="text-[var(--tg-theme-hint-color)] text-sm">
+          <button
+            onClick={() => { setMode('select'); setError('') }}
+            className="text-[var(--tg-theme-hint-color)] text-sm py-2"
+          >
             Назад
           </button>
         </div>
