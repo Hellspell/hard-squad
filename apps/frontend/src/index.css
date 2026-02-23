@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Light theme (fallback) ─── */
 :root {
   --tg-theme-bg-color: #F6F6F9;
   --tg-theme-text-color: #2E3038;
@@ -16,6 +17,29 @@
   --hs-radius: 16px;
   --hs-danger: #FF7777;
   --hs-success: #3DD68C;
+  --hs-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ─── Dark theme fallback (when Telegram not available) ─── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tg-theme-bg-color: #1C1C1E;
+    --tg-theme-text-color: #FFFFFF;
+    --tg-theme-hint-color: #8E8E93;
+    --tg-theme-link-color: #6788F3;
+    --tg-theme-button-color: #6788F3;
+    --tg-theme-button-text-color: #ffffff;
+    --tg-theme-secondary-bg-color: #2C2C2E;
+
+    --hs-shadow: 0px 2px 12px rgba(0,0,0,0.35), 0px 1px 2px rgba(0,0,0,0.25);
+    --hs-shadow-md: 0px 4px 24px rgba(0,0,0,0.45), 0px 1px 2px rgba(0,0,0,0.3);
+  }
+}
+
+/* ─── Dark theme via Telegram (set by App.tsx) ─── */
+[data-theme="dark"] {
+  --hs-shadow: 0px 2px 12px rgba(0,0,0,0.35), 0px 1px 2px rgba(0,0,0,0.25);
+  --hs-shadow-md: 0px 4px 24px rgba(0,0,0,0.45), 0px 1px 2px rgba(0,0,0,0.3);
 }
 
 * {
@@ -33,12 +57,20 @@ body {
 }
 
 #root {
-  min-height: 100vh;
+  /* 100dvh = dynamic viewport height (учитывает адресную строку браузера) */
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   max-width: 480px;
   margin: 0 auto;
   width: 100%;
+  /* Safe area для iPhone (home indicator) */
+  padding-bottom: var(--hs-safe-bottom);
+}
+
+/* Override Tailwind's min-h-screen to use dvh */
+.min-h-screen {
+  min-height: 100dvh !important;
 }
 
 /* Card — base component */

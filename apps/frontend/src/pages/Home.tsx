@@ -111,6 +111,21 @@ export default function Home() {
 
   if (loading) return <SkeletonHome />
 
+  // Не в Telegram — показываем специальный экран
+  if (!window.Telegram?.WebApp?.initData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 gap-4 text-center">
+        <span style={{ fontSize: 64 }}>✈️</span>
+        <div>
+          <p className="font-heading font-bold" style={{ fontSize: 20 }}>Открой в Telegram</p>
+          <p className="text-sm mt-2" style={{ color: 'var(--tg-theme-hint-color)', maxWidth: 260, margin: '8px auto 0' }}>
+            Hard Squad работает только как Telegram Mini App
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4 gap-4 text-center">

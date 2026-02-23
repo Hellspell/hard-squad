@@ -48,6 +48,10 @@ function App() {
       if (params.secondary_bg_color) root.style.setProperty('--tg-theme-secondary-bg-color', params.secondary_bg_color)
     }
 
+    // Применяем dark/light тему
+    const scheme = tg?.colorScheme ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    document.documentElement.setAttribute('data-theme', scheme)
+
     // Проверяем: новый пользователь или нет
     const visited = localStorage.getItem('hs_visited')
     setIsNewUser(!visited)
