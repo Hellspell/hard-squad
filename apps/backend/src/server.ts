@@ -26,38 +26,36 @@ async function start() {
   // Health check
   app.get('/health', () => ({ ok: true, env: process.env.NODE_ENV, v: 2 }))
 
-  // Telegram Bot — запускаем только с реальным токеном
-  const isDev = process.env.NODE_ENV === 'development'
-  const hasRealToken = process.env.BOT_TOKEN && process.env.BOT_TOKEN !== 'dev_placeholder'
-
-  if (hasRealToken) {
-    setupCommands(bot)
-    setupScheduler(bot)
-
-    const isProduction = process.env.NODE_ENV === 'production'
-    const webhookBase = process.env.WEBHOOK_URL
-      ?? (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : null)
-      ?? (isProduction ? 'https://hard-squadbackend-production.up.railway.app' : null)
-
-    if (webhookBase) {
-      const webhookUrl = `${webhookBase}/webhook`
-      await bot.telegram.setWebhook(webhookUrl)
-      app.post('/webhook', (req, reply) => {
-        bot.handleUpdate(req.body as Parameters<typeof bot.handleUpdate>[0])
-        reply.status(200).send()
-      })
-      console.log(`Bot webhook: ${webhookUrl}`)
-    } else {
-      bot.launch()
-      console.log('Bot started (long polling)')
-    }
-  } else if (isDev) {
-    console.log('⚠️  Bot отключён — добавь реальный BOT_TOKEN в .env')
-  }
+  // Webhook маршрут — всегда регистрируем
+  app.post('/webhook', (req, reply) => {
+    bot.handleUpdate(req.body as Parameters<typeof bot.handleUpdate>[0])
+    reply.status(200).send()
+  })
 
   const port = Number(process.env.PORT ?? 3000)
   await app.listen({ port, host: '0.0.0.0' })
   console.log(`Server running on port ${port}`)
+
+  // Telegram Bot — запускаем после старта сервера
+  const token = process.env.BOT_TOKEN
+  const isRealToken = token && token !== 'dev_placeholder'
+
+  if (isRealToken) {
+    setupCommands(bot)
+    setupScheduler(bot)
+
+    const isProduction = process.env.NODE_ENV !== 'development'
+    if (isProduction) {
+      const webhookUrl = `${process.env.WEBHOOK_URL ?? 'https://hard-squadbackend-production.up.railway.app'}/webhook`
+      await bot.telegram.setWebhook(webhookUrl)
+      console.log(`Bot webhook set: ${webhookUrl}`)
+    } else {
+      bot.launch()
+      console.log('Bot started (long polling)')
+    }
+  } else {
+    console.log('⚠️  Bot disabled — set BOT_TOKEN in env')
+  }
 }
 
 start().catch(err => {
