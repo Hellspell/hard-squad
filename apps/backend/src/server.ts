@@ -34,8 +34,11 @@ async function start() {
     setupCommands(bot)
     setupScheduler(bot)
 
-    if (process.env.WEBHOOK_URL) {
-      const webhookUrl = `${process.env.WEBHOOK_URL}/webhook`
+    const webhookBase = process.env.WEBHOOK_URL
+      ?? (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : null)
+
+    if (webhookBase) {
+      const webhookUrl = `${webhookBase}/webhook`
       await bot.telegram.setWebhook(webhookUrl)
       app.post('/webhook', (req, reply) => {
         bot.handleUpdate(req.body as Parameters<typeof bot.handleUpdate>[0])
