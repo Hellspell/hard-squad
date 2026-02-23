@@ -34,8 +34,10 @@ async function start() {
     setupCommands(bot)
     setupScheduler(bot)
 
+    const isProduction = process.env.NODE_ENV === 'production'
     const webhookBase = process.env.WEBHOOK_URL
       ?? (process.env.RAILWAY_PUBLIC_DOMAIN ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}` : null)
+      ?? (isProduction ? 'https://hard-squadbackend-production.up.railway.app' : null)
 
     if (webhookBase) {
       const webhookUrl = `${webhookBase}/webhook`
